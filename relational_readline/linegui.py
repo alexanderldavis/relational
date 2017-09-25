@@ -25,6 +25,7 @@ import os
 import sys
 from typing import Optional
 
+
 from relational import relation, parser, rtypes
 from relational import maintenance
 from xtermcolor import colorize
