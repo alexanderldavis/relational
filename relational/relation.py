@@ -169,6 +169,26 @@ class Relation (object):
                 newt.content.add(i + j)
         return newt
 
+    def groupby(self, attributes, aggregates) -> 'Relation':
+        '''
+        group by 
+        
+        '''
+
+        if (not isinstance(other, relation)):
+            raise Exception('Operand must be a relation')
+        if self.header.sharedAttributes(other.header) != 0:
+            raise Exception(
+                'Unable to perform product on relations with colliding attributes'
+            )
+        newt = relation()
+        newt.header = Header(self.header + other.header)
+
+        for i in self.content:
+            for j in other.content:
+                newt.content.add(i + j)
+        return newt
+
     def projection(self, * attributes) -> 'Relation':
         '''
         Can be called in two different ways:

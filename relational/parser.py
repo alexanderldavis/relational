@@ -33,6 +33,7 @@ UNARY = 1
 BINARY = 2
 
 PRODUCT = '*'
+GROUP_BY = '&'
 DIFFERENCE = '-'
 UNION = '∪'
 INTERSECTION = '∩'
@@ -48,11 +49,11 @@ ARROW = '➡'
 
 b_operators = (PRODUCT, DIFFERENCE, UNION, INTERSECTION, DIVISION,
                JOIN, JOIN_LEFT, JOIN_RIGHT, JOIN_FULL)  # List of binary operators
-u_operators = (PROJECTION, SELECTION, RENAME)  # List of unary operators
+u_operators = (PROJECTION, GROUP_BY, SELECTION, RENAME)  # List of unary operators
 
 # Associates operator with python method
 op_functions = {
-    PRODUCT: 'product', DIFFERENCE: 'difference', UNION: 'union', INTERSECTION: 'intersection', DIVISION: 'division', JOIN: 'join',
+    PRODUCT: 'product', GROUP_BY: 'groupby', DIFFERENCE: 'difference', UNION: 'union', INTERSECTION: 'intersection', DIVISION: 'division', JOIN: 'join',
     JOIN_LEFT: 'outer_left', JOIN_RIGHT: 'outer_right', JOIN_FULL: 'outer', PROJECTION: 'projection', SELECTION: 'selection', RENAME: 'rename'}
 
 
@@ -135,7 +136,9 @@ class Node:
         # Since it searches for strings, and expressions into parenthesis are
         # within sub-lists, they won't be found here, ensuring that they will
         # have highest priority.
+        print("this is the length: " + str(len(expression)))
         for i in range(len(expression) - 1, -1, -1):
+            print("expression index: " + str(i) + " the string: " + expression[i])
             if expression[i] in b_operators:  # Binary operator
                 self.kind = BINARY
                 self.name = expression[i]
@@ -163,8 +166,9 @@ class Node:
 
                 self.prop = expression[1 + i].strip()
                 self.child = node(expression[2 + i])
-
+                print("right before raise")
                 return
+        
         raise ParserException("Expected operator in '%s'" % expression)
 
     def toCode(self):
@@ -241,6 +245,8 @@ class Node:
         elif self.name == PROJECTION:
             return [i.strip() for i in self.prop.split(',')]
         elif self.name == PRODUCT:
+            return self.left.result_format(rels) + self.right.result_format(rels)
+        elif self.name == GROUP_BY:
             return self.left.result_format(rels) + self.right.result_format(rels)
         elif self.name == SELECTION:
             return self.child.result_format(rels)
@@ -391,7 +397,7 @@ def tokenize(expression: str) -> list:
 def tree(expression: str) -> Node:
     '''This function parses a relational algebra expression into a AST and returns
     the root node using the Node class.'''
-    return Node(tokenize(expression))
+    return node(tokenize(expression))
 
 
 def parse(expr: str) -> CallableString:
@@ -399,6 +405,7 @@ def parse(expr: str) -> CallableString:
     CallableString (a string that can be called) whith the corresponding
     Python expression.
     '''
+    #TODO we should intercept here so it doesn't get parsed, but parse instead in linegui.py, maybe... 
     return tree(expr).toPython()
 
 if __name__ == "__main__":
