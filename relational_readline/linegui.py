@@ -298,7 +298,7 @@ def exec_query(command: str) -> None:
     parts = command.split('=', 1)
 
     if "product" in command:
-        print("hi")
+        # print("hi")
         qrelasstr = command.split("product")[1].split(")")[0][1:].split(",")[0].strip() +" * "+command.split("product")[1].split(")")[0][1:].split(",")[1].strip()
         command = command.split("product")[0] + qrelasstr+ command.split("product")[1].split(command.split("product")[1].split(")")[0][1:].split(",")[1].strip()+")")[1]
         # command.split("product")[0]
@@ -307,17 +307,15 @@ def exec_query(command: str) -> None:
         # lst2 = lst[1].split(",")
         # command = lst2[0]+" * "+ lst2[1][:-1]
 
-        print("edited command", command)
+        # print("edited command", command)
 
     if "groupby" in command:
         # print("hello")
         # command = "~//skill,other//c+id//skills"
-        relations[command.split("{")[0].strip().split("(")[1][:-1]].groupby([x.strip() for x in command.split("{")[1].strip()[:-2].split(",")], [x.strip for x in command.split("{")[2].split("}")[0]])
-        relations["skills"].groupby(["count"], ["id"])
-        #_PROJECTION SName, GradYear (student)
+        print(relations[command.split("{")[0].strip().split("(")[1][:-1]].groupby([x.strip() for x in command.split("{")[1].strip()[:-2].split(",")], command.split("{")[2].split("}")[0].strip()))
     else:
         relname,query = maintenance.UserInterface.split_query(command)
-        print(query)
+        # print(query)
 
         # Execute query
         try:

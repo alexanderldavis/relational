@@ -169,29 +169,77 @@ class Relation (object):
                 newt.content.add(i + j)
         return newt
 
-    def groupby(self, aggFunction, attr) -> 'Relation':
+    def groupby(self, aggAttrs, aggFun) -> 'Relation':
         #'''
         #Group by implementation
         #'''
         newt = relation()
-        newt.header = self.header
-        print("newtheader", newt.header)
+
+        # print("newtheader", newt.header)
+        if "min" in aggFun:
+            return self.min(newt, aggAttrs, aggFun.split("min(")[1][:-1])
+        if "max" in aggFun:
+            return self.max(newt, aggAttrs, aggFun.split("max(")[1][:-1])
+
+    def min(self, newt, groupby, findMinOf):
+        currentMinimum = 0
+        mydict = dict()
+        newt.header = tuple([x for x in groupby])+("min("+findMinOf+")", )
+        # print("groupbymin", groupby)
+        if len(groupby) == 1:
+            groupbyIdx = tuple()
+            groupbyIdx += (self.header.index(groupby[0]),)
+        else:
+            groupbyIdx = tuple()
+            for i in groupby:
+                groupbyIdx += (self.header.index(i),)
+        findMinOfIdx = self.header.index(findMinOf)
         for row in self.content:
-            x, y = row
-            print("row", row)
+            groupbyTuple = tuple()
+            for groupbyId in groupbyIdx:
+                groupbyTuple+=(row[groupbyId],)
+            if groupbyTuple not in mydict:
+                mydict[groupbyTuple] = row[findMinOfIdx]
+            else:
+                if row[findMinOfIdx] < mydict[groupbyTuple]:
+                    mydict[groupbyTuple] = row[findMinOfIdx]
+        # print(newt)
 
+        for tupl, item in mydict.items():
+            megatuple = tuple()
+            megatuple+=tupl+(item,)
+            newt.content.add(megatuple)
+        return newt
 
-    # def add(newt, attr):
+    def max(self, newt, groupby, findMinOf):
+        currentMinimum = 0
+        mydict = dict()
+        newt.header = tuple([x for x in groupby])+("min("+findMinOf+")", )
+        # print("groupbymin", groupby)
+        if len(groupby) == 1:
+            groupbyIdx = tuple()
+            groupbyIdx += (self.header.index(groupby[0]),)
+        else:
+            groupbyIdx = tuple()
+            for i in groupby:
+                groupbyIdx += (self.header.index(i),)
+        findMinOfIdx = self.header.index(findMinOf)
+        for row in self.content:
+            groupbyTuple = tuple()
+            for groupbyId in groupbyIdx:
+                groupbyTuple+=(row[groupbyId],)
+            if groupbyTuple not in mydict:
+                mydict[groupbyTuple] = row[findMinOfIdx]
+            else:
+                if row[findMinOfIdx] > mydict[groupbyTuple]:
+                    mydict[groupbyTuple] = row[findMinOfIdx]
+        # print(newt)
 
-        # newt = relation()
-        # newt.header = Header(self.header + other.header)
-        #
-        # for i in self.content:
-        #     for j in other.content:
-        #         newt.content.add(i + j)
-        # return newt
-
-
+        for tupl, item in mydict.items():
+            megatuple = tuple()
+            megatuple+=tupl+(item,)
+            newt.content.add(megatuple)
+        return newt
 
     def projection(self, * attributes) -> 'Relation':
         '''
