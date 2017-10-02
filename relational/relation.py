@@ -169,16 +169,14 @@ class Relation (object):
                 newt.content.add(i + j)
         return newt
 
-    def groupby(self, aggFunction, attr) -> 'Relation':
+    def groupby(self, aggAttrs, aggFun) -> 'Relation':
         #'''
         #Group by implementation
         #'''
         newt = relation()
-        newt.header = self.header
+        newt.header = self.header + (aggFun[0],)
         print("newtheader", newt.header)
-        for row in self.content:
-            x, y = row
-            print("row", row)
+
 
 
     # def add(newt, attr):
