@@ -176,9 +176,7 @@ class Relation (object):
         newt = relation()
         newt.header = self.header + (aggFun[0],)
         print("newtheader", newt.header)
-        for row in self.content:
-            x, y = row
-            print("row", row)
+
 
 
     # def add(newt, attr):
