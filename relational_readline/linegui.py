@@ -323,7 +323,7 @@ def exec_query(command: str) -> None:
         # print("hello")
         # command = "~//skill,other//c+id//skills"
         relations[command.split("{")[0].strip().split("(")[1][:-1]].groupby([x.strip() for x in command.split("{")[1].strip()[:-2].split(",")], [x.strip for x in command.split("{")[2].split("}")[0]])
-        relations["skills"].groupby(["count"], ["id"])
+        # relations["skills"].groupby(["count"], ["id"])
         #_PROJECTION SName, GradYear (student)
     else:
         relname,query = maintenance.UserInterface.split_query(command)
