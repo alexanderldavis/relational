@@ -176,19 +176,56 @@ class Relation (object):
         newt = relation()
         newt.header = self.header + (aggFun[0],)
         print("newtheader", newt.header)
+        print("aggFun", aggFun)
+        funstr = aggFun[:-1].split('(')
+        fun = funstr[1]
+        if "sum" in aggFun:
+            self.sum(newt, aggAttrs, fun)
+        elif "count" in aggFun:
+            self.count(newt, aggAttrs, fun)
+        else:
+            print('whoops')
+
+
+    def count(self, newt, attr, fun):
+
+
+        newRel = Relation()
+        headerTup = ()
+        countDict = {}
+        aggTup = ()
+
+        funIndex = self.header.index(fun)
+        for a in attr:
+            headerTup = headerTup + (a,)
+            aggTup = aggTup + (self.header.index(a),)
+        for row in self.content:
+            t = ()
+            for at in aggTup:
+                t = t + (row[at],)
+
+            if t in countDict:
+                countDict[t].append(row[funIndex])
+            else:
+                countDict[t] = [row[funIndex]]
+   
+
+        
+        
+        newRel.header = headerTup + ("count_" + fun,)
+        for key in countDict:
+            i = key + (str(len(countDict[key])),)
+
+            newRel.content.add(i)
+        return newRel
 
 
 
-    # def add(newt, attr):
 
-        # newt = relation()
-        # newt.header = Header(self.header + other.header)
-        #
-        # for i in self.content:
-        #     for j in other.content:
-        #         newt.content.add(i + j)
-        # return newt
 
+
+            #         row = (i[j] for j in ids)
+            # newt.content.add(tuple(row))
 
 
     def projection(self, * attributes) -> 'Relation':
