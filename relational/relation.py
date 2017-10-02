@@ -180,6 +180,69 @@ class Relation (object):
             return self.min(newt, aggAttrs, aggFun.split("min(")[1][:-1])
         if "max" in aggFun:
             return self.max(newt, aggAttrs, aggFun.split("max(")[1][:-1])
+        if "avg" in aggFun:
+            return self.avg(aggFun,aggAttrs)
+        if "sum" in aggFun:
+            return self.sum(aggFun,aggAttrs)
+
+    def avg(self, aggFun, aggAttrs):
+        newt = relation()
+        newt.header = self.header
+        newtRows = {};
+
+        aggCol = aggFun.split("(")[1].strip(")")
+        for row in self.content:
+            aggAttrTuple = ()
+            headerTuple = ()
+            for attr in aggAttrs:
+                aggAttrTuple = aggAttrTuple + (row[self.header.index(attr)],)
+                headerTuple = headerTuple + (attr,)
+
+            if aggAttrTuple in newtRows:
+                newtRows[aggAttrTuple].append(row[self.header.index(aggCol)])
+            else:
+                newtRows[aggAttrTuple] = [row[self.header.index(aggCol)]]
+
+        newt.header = headerTuple + (aggFun, )
+        for i in newtRows:
+            theList = newtRows[i]
+            denom = len(theList)
+            total = 0
+            for string in theList:
+                total += float(string)
+            average = total/denom
+            result = i + (str(average),)
+            newt.content.add(result)
+        return newt
+
+    def sum(self, aggFun, aggAttrs):
+        newt = relation()
+        newt.header = self.header
+        newtRows = {};
+
+        aggCol = aggFun.split("(")[1].strip(")")
+        for row in self.content:
+            aggAttrTuple = ()
+            headerTuple = ()
+            for attr in aggAttrs:
+                aggAttrTuple = aggAttrTuple + (row[self.header.index(attr)],)
+                headerTuple = headerTuple + (attr,)
+
+            if aggAttrTuple in newtRows:
+                newtRows[aggAttrTuple].append(row[self.header.index(aggCol)])
+            else:
+                newtRows[aggAttrTuple] = [row[self.header.index(aggCol)]]
+
+        newt.header = headerTuple + (aggFun, )
+        for i in newtRows:
+            theList = newtRows[i]
+            denom = len(theList)
+            total = 0
+            for string in theList:
+                total += float(string)
+            result = i + (str(total),)
+            newt.content.add(result)
+        return newt
 
     def min(self, newt, groupby, findMinOf):
         currentMinimum = 0
