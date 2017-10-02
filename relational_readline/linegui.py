@@ -109,7 +109,7 @@ class SimpleCompleter:
 
 relations = {}
 completer = SimpleCompleter(
-    ['SURVEY', 'LIST', 'LOAD ', 'UNLOAD ', 'HELP ', 'QUIT', 'SAVE ', '_PRODUCT ', '_UNION ', '_INTERSECTION ',
+    ['SURVEY', 'LIST', 'LOAD ', 'UNLOAD ', 'HELP ', 'QUIT', 'SAVE ', '_GROUPBY ', '_PRODUCT ', '_UNION ', '_INTERSECTION ',
      '_DIFFERENCE ', '_JOIN ', '_LJOIN ', '_RJOIN ', '_FJOIN ', '_PROJECTION ', '_RENAME_TO ', '_SELECTION ', '_RENAME ', '_DIVISION '])
 
 
@@ -253,8 +253,9 @@ def exec_line(command: str) -> None:
 
 
 def replacements(query: str) -> str:
-    '''This funcion replaces ascii easy operators with the correct ones'''
+    '''This function replaces ascii easy operators with the correct ones'''
     rules = (
+        ('_GROUPBY', parser.GROUPBY),
         ('_PRODUCT', parser.PRODUCT),
         ('_UNION', parser.UNION),
         ('_INTERSECTION', parser.INTERSECTION),
@@ -290,28 +291,51 @@ def exec_query(command: str) -> None:
         printrel = True
 
     # Performs replacements for weird operators
+    print(command)
     command = replacements(command)
-
+    print(command)
     # Finds the name in where to save the query
     parts = command.split('=', 1)
-    relname,query = maintenance.UserInterface.split_query(command)
 
-    # Execute query
-    try:
-        pyquery = parser.parse(query)
-        result = pyquery(relations)
+    if "product" in command:
+        print("hi")
+        qrelasstr = command.split("product")[1].split(")")[0][1:].split(",")[0].strip() +" * "+command.split("product")[1].split(")")[0][1:].split(",")[1].strip()
+        command = command.split("product")[0] + qrelasstr+ command.split("product")[1].split(command.split("product")[1].split(")")[0][1:].split(",")[1].strip()+")")[1]
+        # command.split("product")[0]
+        # lst = command.split("(")
+        # print(lst[1])
+        # lst2 = lst[1].split(",")
+        # command = lst2[0]+" * "+ lst2[1][:-1]
 
-        printtty(colorize("-> query: %s" % pyquery, COLOR_GREEN))
+        print("edited command", command)
 
-        if printrel:
-            print()
-            print(result)
+    if "groupby" in command:
+        # print("hello")
+        # command = "~//skill,other//c+id//skills"
+        relations[command.split("{")[0].strip().split("(")[1][:-1]].groupby([x.strip() for x in command.split("{")[1].strip()[:-2].split(",")], [x.strip for x in command.split("{")[2].split("}")[0]])
+        relations["skills"].groupby(["count"], ["id"])
+        #_PROJECTION SName, GradYear (student)
+    else:
+        relname,query = maintenance.UserInterface.split_query(command)
+        print(query)
 
-        relations[relname] = result
+        # Execute query
+        try:
+            pyquery = parser.parse(query)
+            result = pyquery(relations)
 
-        completer.add_completion(relname)
-    except Exception as e:
-        print(colorize(str(e), ERROR_COLOR))
+
+            printtty(colorize("-> query: %s" % pyquery, COLOR_GREEN))
+
+            if printrel:
+                print()
+                print(result)
+
+            relations[relname] = result
+
+            completer.add_completion(relname)
+        except Exception as e:
+            print(colorize(str(e), ERROR_COLOR))
 
 
 def main(files=[]):
