@@ -291,9 +291,9 @@ def exec_query(command: str) -> None:
         printrel = True
 
     # Performs replacements for weird operators
-    print(command)
+    # print(command)
     command = replacements(command)
-    print(command)
+    # print(command)
     # Finds the name in where to save the query
     parts = command.split('=', 1)
 
