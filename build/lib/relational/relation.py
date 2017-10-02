@@ -184,6 +184,9 @@ class Relation (object):
             return self.avg(aggFun,aggAttrs)
         if "sum" in aggFun:
             return self.sum(aggFun,aggAttrs)
+        if "count" in aggFun:
+            return self.count(newt, aggAttrs, aggFun)
+        return "Failed"
 
     def avg(self, aggFun, aggAttrs):
         newt = relation()
@@ -303,6 +306,31 @@ class Relation (object):
             megatuple+=tupl+(item,)
             newt.content.add(megatuple)
         return newt
+
+    def count(self, newt, attr, aggFun):
+        funstr = aggFun[:-1].split('(')
+        fun = funstr[1]
+        newRel = Relation()
+        headerTup = ()
+        countDict = {}
+        aggTup = ()
+        funIndex = self.header.index(fun)
+        for a in attr:
+            headerTup = headerTup + (a,)
+            aggTup = aggTup + (self.header.index(a),)
+        for row in self.content:
+            t = ()
+            for at in aggTup:
+                t = t + (row[at],)
+            if t in countDict:
+                countDict[t].append(row[funIndex])
+            else:
+                countDict[t] = [row[funIndex]]
+        newRel.header = headerTup + ("count_" + fun,)
+        for key in countDict:
+            i = key + (str(len(countDict[key])),)
+            newRel.content.add(i)
+        return newRel
 
     def projection(self, * attributes) -> 'Relation':
         '''
