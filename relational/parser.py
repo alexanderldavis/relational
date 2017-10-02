@@ -108,6 +108,7 @@ class Node:
     def __init__(self, expression: Optional[list] = None) -> None:
         '''Generates the tree from the tokenized expression
         If no expression is specified then it will create an empty node'''
+        print(expression)
         if expression is None or len(expression) == 0:
             return
 

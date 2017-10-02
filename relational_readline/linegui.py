@@ -282,6 +282,16 @@ def exec_query(command: str) -> None:
     Updates the set of relations.
     '''
 
+    op = command.split('(')
+    if op[0] == 'product':
+    	table = op[1].split(',')
+    	firsttable = table[0]
+    	secondtable = table[1][:-1]
+    	print(firsttable)
+    	print(secondtable)
+    	command = firsttable + " _PRODUCT " + secondtable
+    	
+
     # If it terminates with ; doesn't print the result
     if command.endswith(';'):
         command = command[:-1]
